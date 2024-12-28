@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+:root{
+	--primary-color:#d4b196;
+	--secondary-color:#252926
+}
+
+body{
+	font-family: 'Nunito', serif;
+}
+
+.fade-in{
+	opacity: 0;
+	animation: fade-in  ease-in 2s forwards;
+}
+
+.address {
+	max-width:16rem;
+	display: flex;
+	flex-direction: column;
+	cursor: pointer;
+}
+
+@keyframes fade-in{
+	to{
+		opacity: 1;
+	}
+}

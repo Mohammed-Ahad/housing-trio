@@ -1,0 +1,83 @@
+#addLeadForm {
+	display: grid;
+	grid-template-columns: 1fr 4fr;
+	row-gap: 20px;
+	margin: 25px;
+	align-items: center;
+}
+
+#addLeadForm>label {
+	font-weight: 500;
+}
+
+input, select, textarea {
+	border: 1px solid #aaaa;
+	padding: 7px 10px;
+	border-radius: 5px;
+	transition: border-color 1s;
+}
+
+input:focus, input:active, select:focus, select:active, textarea:focus,
+	textarea:active {
+	border-color: black;
+	outline: none;
+}
+
+.description-popup {
+	display: flex;
+	gap: 23px;
+	margin: 20px 0;
+}
+
+.description-popup td {
+	padding: 10px 20px;
+}
+
+.description-popup td:nth-child(2) {
+	white-space: nowrap;
+}
+
+.description-popup tr {
+	border-bottom: 1px solid #8080807d;
+}
+
+.description-popup>.right {
+	flex: 1
+}
+
+.description-popup .left {
+	flex: 1.5
+}
+
+.description-popup .right {
+	display: flex;
+	flex-direction: column;
+	gap: 10px
+}
+
+.advance-search {
+	margin: 20px 0;
+}
+
+.based-on {
+	display: flex;
+	gap: 10px;
+}
+
+.advance-search .based-on label {
+	color: var(--primary-color);
+	background-color: var(--secondary-color);
+	padding: 7px 15px;
+	font-size: 0.9rem;
+	border-radius: 5px;
+	font-weight: 500;
+}
+
+.advance-search .based-on input {
+	display: none;
+}
+
+.advance-search .based-on input:checked+label {
+	color: white;
+	background-color: var(--primary-color);
+}
