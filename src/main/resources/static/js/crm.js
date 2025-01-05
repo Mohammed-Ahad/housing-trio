@@ -5,18 +5,38 @@ window.onload = () => {
 const dataTables = {}
 
 async function loadLeadsTable(basedOn = 'followUpDate') {
-
 	const data = {
-		basedOn
+		basedOn,
 	}
-	try {
-		console.log('base', baseUrl)
 	
-		const res = await sendGetReq(`${baseUrl}/api/get-leads`, data)
+	let fromDate, toDate;
+	//date range search
+	if(basedOn === ''){
+		//Deselect based on radios
+		document.querySelectorAll('[name="basedOn"]').forEach(radio=> radio.checked = false)
+		
+		fromDate = document.querySelector('#from').value;
+		toDate = document.querySelector('#to').value;
+		
+		if(fromDate > toDate){
+			error('Error', 'From date connot be greater then To date')
+			return
+		}
+		
+		data.fromDate  = fromDate;
+		data.toDate = toDate;
+	}
+	
+	
+	try {
+		
+		const res = await sendPostReq(`${baseUrl}/api/secure/get-leads`, data)
+		
 		if (!res.ok) {
 			throw new Error('Somthing went wrong please try again')
 		}
-
+		
+		//console.log(await res.text());
 		const resData = await res.json();
 
 		if (dataTables['leadTable']) {
@@ -44,7 +64,21 @@ async function loadLeadsTable(basedOn = 'followUpDate') {
 								<i class="fa-regular fa-pen-to-square" data-id="${row.id}" onclick="showLeadPopUp(this)">Edit</i>`
 					}
 				},
-			]
+			],
+			//Sort by follow update
+			order: [[6, 'asc']],
+			rowCallback: function(row, data) {
+				// Parse the followUpDate and current date
+				const followUpDate = new Date(data.followUpDate);
+				const currentDate = new Date();
+
+				const { basedOn } = data;
+				//Only for follow up
+				if (basedOn === 'followUpDate' && followUpDate < currentDate) {
+					$(row).addClass('highlight-red');
+				}
+			},
+			lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
 		});
 		dataTables['leadTable'] = leadTable;
 
@@ -135,9 +169,10 @@ function showLeadPopUp(element) {
 	//Row data from data table
 	const rowData = dataTables['leadTable'].row($(element).closest('tr')).data(); // Use DataTable's API
 	//Status options in form
-	const statusOption = ['New', 'Hot', 'Follow Up', 'Booked and Closed', 'Dead'];
+	const statusOption = ['New', 'Hot', 'Follow Up', 'Prospect', 'Site visit scheduled',
+		'Site visit done', 'Booked and Closed', 'No response', 'Dead'];
 	//User options in form
-	const users = ['info']
+	const users = ['info', 'saifulla.shariff', 'haseeb.shariff', 'abdul.mujeeb']
 
 	$.confirm({
 		title: 'Add Lead?',
@@ -165,10 +200,10 @@ function showLeadPopUp(element) {
 					<input id="project" name="project" placeholder='Enter project' value='${rowData?.project || ''}' />
 					
 					<label for='followUpDate'>Follow Up: </label>
-					<input id="followUpDate" name="followUpDate" placeholder='Select Date' type='date' value='${rowData?.followUpDate || ''}' />
+					<input id="followUpDate" name="followUpDate" placeholder='Select Date' type='datetime-local' value='${rowData?.followUpDate || ''}' />
 					
 					<label for='description'>Description: </label>
-					<input id="description" name="description" placeholder='Enter description' value='${rowData?.description || ''}' />
+					<textarea id="description" name="description" placeholder='Enter description' value='${rowData?.description || ''}'></textarea>
 				</form>
 			</div>`,
 		boxWidth: "30vw",

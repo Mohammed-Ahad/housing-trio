@@ -10,6 +10,8 @@
 
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/crm.css">
+
+
 </head>
 <body>
 	<jsp:include page="AdminHeader.jsp" />
@@ -35,16 +37,33 @@
 						<label for='active' onclick="loadLeadsTable('active')">Active</label>
 					</div>
 
+					<div>
+						<input id="prospect" name='basedOn' type='radio' value='prospect' />
+						<label for='prospect' onclick="loadLeadsTable('prospect')">Prospect</label>
+					</div>
 
 					<div>
-						<input id="closed" name='basedOn' type='radio' value='closed' /> <label
-							for='closed' onclick="loadLeadsTable('closed')">Closed</label>
+						<input id="closed" name='basedOn' type='radio' value='closed' />
+						<label for='closed' onclick="loadLeadsTable('closed')">Closed</label>
 					</div>
 
 					<div>
 						<input id="dead" name='basedOn' type='radio' value='dead' /> <label
 							for='dead' onclick="loadLeadsTable('dead')">Dead</label>
 					</div>
+				</div>
+
+				<div class="date-range-search">
+					<div class="label-input">
+						<label for="from">From</label> <input id="from" name='from'
+							type='date' />
+					</div>
+					<div class="label-input">
+						<label for="to">To</label> <input id="to" name='to'
+							type='date' />
+					</div>
+
+					<button class="primary-btn" onclick="loadLeadsTable('')">Get Leads</button>
 				</div>
 			</div>
 

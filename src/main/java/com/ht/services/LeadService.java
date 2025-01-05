@@ -1,17 +1,19 @@
 package com.ht.services;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
-
-import javax.transaction.Transactional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.ht.dto.AddLeadRequest;
 import com.ht.dto.GetLeadsRequest;
+import com.ht.dto.LeadDTO;
 import com.ht.dto.LeadDescriptionDto;
 import com.ht.modals.Lead;
 import com.ht.modals.LeadDescription;
@@ -36,47 +38,102 @@ public class LeadService {
 		this.leadRepo = leadRepo;
 	}
 
-	public ResponseEntity<?> getLeads(GetLeadsRequest getLeadsRequest) {
-		List<Lead> leads = Collections.emptyList();
+	public ResponseEntity<?> getLeads(GetLeadsRequest getLeadsRequest, Authentication authentication) {
+		List<LeadDTO> dtos = Collections.emptyList();
 
 		try {
-			LocalDate fromDate = LocalDate.now();
-			LocalDate toDate = LocalDate.now();
 
-			// Find leads based on type
-			switch (getLeadsRequest.getBasedOn()) {
-			case "followUpDate": {
-				leads = leadRepo.findByFollowUpDateBetween(fromDate, toDate);
-				break;
+			/*
+			 * if (authorities.stream() .anyMatch(authority ->
+			 * authority.getAuthority().equals(ROLES.ROLE_ADMIN.getRole()))) {
+			 * 
+			 * } else if (authorities.stream() .anyMatch(authority ->
+			 * authority.getAuthority().equals(ROLES.ROLE_USER.getRole()))) {
+			 * 
+			 * }
+			 */
+			List<Lead> leads = Collections.emptyList();
+			if (getLeadsRequest.getBasedOn().equals("")) {
+
+				LocalDateTime fromDate = getLeadsRequest.getFromDate().atStartOfDay();
+				LocalDateTime toDate = getLeadsRequest.getToDate().atStartOfDay();
+
+				leads = leadRepo.findByCreateDtBetween(fromDate, toDate);
+			} else {
+				leads = getBasedOnLead(getLeadsRequest);
 			}
 
-			case "active": {
-				leads = leadRepo.findByStatusNot(StatusUtil.DEAD);
-				break;
-			}
+			dtos = leads.stream().map(lead -> {
+				LeadDTO leadDTO = new LeadDTO();
 
-			case "dead": {
-				leads = leadRepo.findByStatus(StatusUtil.DEAD);
-				break;
-			}
+				// Mapping fields from Lead to LeadDTO
+				leadDTO.setBasedOn(getLeadsRequest.getBasedOn());
 
-			case "closed": {
-				leads = leadRepo.findByStatus(StatusUtil.BOOKED_AND_CLOSED);
-				break;
-			}
+				leadDTO.setId(lead.getId());
+				leadDTO.setName(lead.getName());
+				leadDTO.setPhoneNo(lead.getPhoneNo());
+				leadDTO.setAssignedTo(lead.getAssignedTo());
+				leadDTO.setStatus(lead.getStatus());
+				leadDTO.setProject(lead.getProject());
+				leadDTO.setFollowUpDate(lead.getFollowUpDate());
+				leadDTO.setCreateDt(lead.getCreateDt());
 
-			default:
-				throw new IllegalArgumentException("Unexpected value: " + getLeadsRequest.getBasedOn());
-			}
+				return leadDTO;
+			}).collect(Collectors.toList());
 
-			// leads = leadRepo.findAll();
+			//filter out user leads
+			if (!authentication.getName().equals("info")) {
+				dtos = dtos.stream().filter(lead -> lead.getAssignedTo().equals(authentication.getName()))
+						.collect(Collectors.toList());
+			}
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error("ERROR - getLeads(): " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred." + e.getMessage());
 		}
 
-		return ResponseEntity.ok(leads);
+		return ResponseEntity.ok(dtos);
+	}
+
+	private List<Lead> getBasedOnLead(GetLeadsRequest getLeadsRequest) {
+		List<Lead> leads = Collections.emptyList();
+		// Find leads based on type
+		switch (getLeadsRequest.getBasedOn()) {
+		case "followUpDate": {
+			LocalDateTime now = LocalDateTime.now();
+			// End of the day to fetch all todays lead
+			LocalDateTime endOfDay = now.with(LocalTime.MAX);
+			List<String> notStatus = List.of(StatusUtil.DEAD, StatusUtil.BOOKED_AND_CLOSED);
+			
+			leads = leadRepo.findByFollowUpDateLessThanEqualAndStatusNotIn(endOfDay, notStatus);
+			break;
+		}
+		case "prospect": {
+			leads = leadRepo.findByStatus(StatusUtil.PROSPECT);
+			break;
+		}
+
+		case "active": {
+			leads = leadRepo.findByStatusNot(StatusUtil.DEAD);
+			break;
+		}
+
+		case "dead": {
+			leads = leadRepo.findByStatus(StatusUtil.DEAD);
+			break;
+		}
+
+		case "closed": {
+			leads = leadRepo.findByStatus(StatusUtil.BOOKED_AND_CLOSED);
+			break;
+		}
+
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + getLeadsRequest.getBasedOn());
+		}
+
+		return leads;
 	}
 
 	public ResponseEntity<?> saveLead(AddLeadRequest addLeadRequest) {
