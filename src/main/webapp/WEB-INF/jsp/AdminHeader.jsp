@@ -13,10 +13,14 @@
 				href="${pageContext.request.contextPath}/admin/crm">CRM</a></li>
 		</ul>
 
-		<div class="flex flex-col leading-4 name">
-			<span class="font-bold poppins-regular-italic company-name">Housing
-				Trio</span> <span class="font-bold text-[8px] italic">The key to
-				your dream home</span>
+		<div class="flex gap-2">
+			<div class="flex flex-col leading-4 name">
+				<span class="font-bold poppins-regular-italic company-name">Housing
+					Trio</span> <span class="font-bold text-[8px] italic">The key to
+					your dream home</span>
+			</div>
+			<a href="${pageContext.request.contextPath}/logout"
+				class="primary-btn">Logout</a>
 		</div>
 	</div>
 </header>

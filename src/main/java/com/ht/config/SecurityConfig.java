@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,20 +26,44 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(
-						requests -> requests.antMatchers("/admin/**").authenticated().anyRequest().permitAll())
+				.authorizeHttpRequests(requests -> requests.antMatchers("/admin/**").hasAnyRole("ADMIN", "USER")
+						.anyRequest().permitAll())
 				.formLogin(form -> form.defaultSuccessUrl("/admin/crm", true))
-				.logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout"));
 
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Create
+																												// session
+																												// if
+																												// required
+				);
+		// .rememberMe(rem -> rem.alwaysRemember(false));
+
+//		http.csrf(csrf -> csrf.disable());
 		return http.build();
 	}
 
 	@Bean
 	UserDetailsService userDetailsService() {
 		@SuppressWarnings("deprecation")
-		UserDetails user = User.withDefaultPasswordEncoder().username("trio").password("trio@123").roles("USER")
+		UserDetails info = User.withDefaultPasswordEncoder().username("info").password("EasyPass@421").roles("ADMIN")
 				.build();
-		List<UserDetails> users = List.of(user);
+
+		@SuppressWarnings("deprecation")
+		UserDetails saif = User.withDefaultPasswordEncoder().username("saifulla.shariff").password("Lol@421")
+				.roles("USER").build();
+
+		@SuppressWarnings("deprecation")
+		UserDetails haseeb = User.withDefaultPasswordEncoder().username("haseeb.shariff").password("Haseeb@123")
+				.roles("USER").build();
+
+		@SuppressWarnings("deprecation")
+		UserDetails mujeeb = User.withDefaultPasswordEncoder().username("abdul.mujeeb").password("Abdul@123")
+				.roles("USER").build();
+
+		@SuppressWarnings("deprecation")
+		UserDetails faraz = User.withDefaultPasswordEncoder().username("syed.faraz").password("Faraz@123").roles("USER")
+				.build();
+
+		List<UserDetails> users = List.of(info, saif, haseeb, mujeeb, faraz);
 		return new InMemoryUserDetailsManager(users);
 	}
 }

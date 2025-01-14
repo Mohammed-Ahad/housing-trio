@@ -13,6 +13,8 @@ public interface StatusUtil {
 
 	String FOLLOW_UP = "Follow Up";
 
+	String PROSPECT = "Prospect";
+
 	String BOOKED_AND_CLOSED = "Booked and Closed";
 
 	String DEAD = "Dead";

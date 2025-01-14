@@ -1,6 +1,5 @@
 package com.ht.modals;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,13 +10,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
@@ -56,7 +52,7 @@ public class Lead {
 	private List<LeadDescription> descriptions;
 
 	@Column(nullable = false)
-	private LocalDate followUpDate;
+	private LocalDateTime followUpDate;
 	
 	@Column(nullable = false)
 	private LocalDateTime updateDt;

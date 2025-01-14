@@ -1,5 +1,7 @@
 package com.ht.dto;
 
+import java.time.LocalDate;
+
 import lombok.Data;
 
 /**
@@ -11,4 +13,8 @@ import lombok.Data;
 @Data
 public class GetLeadsRequest {
 	private String basedOn;
+	
+	private LocalDate fromDate;
+	
+	private LocalDate toDate;
 }

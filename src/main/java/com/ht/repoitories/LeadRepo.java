@@ -1,6 +1,6 @@
 package com.ht.repoitories;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,8 +15,11 @@ import com.ht.modals.Lead;
  */
 public interface LeadRepo extends JpaRepository<Lead, Integer> {
 
-	// Based on follow up date
-	List<Lead> findByFollowUpDateBetween(LocalDate from, LocalDate to);
+
+	List<Lead> findByCreateDtBetween(LocalDateTime from, LocalDateTime to);
+
+	// Based on follow up date < :date
+	List<Lead> findByFollowUpDateLessThanEqualAndStatusNotIn(LocalDateTime date, List<String> notStatuses);
 
 	// Find by status == status
 	List<Lead> findByStatus(String status);

@@ -1,8 +1,12 @@
 package com.ht.controllers;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -60,9 +64,9 @@ public class ApiController {
 		return leadService.saveLead(addLeadRequest);
 	}
 
-	@GetMapping("/get-leads")
-	public ResponseEntity<?> getLeads(@ModelAttribute GetLeadsRequest getLeadsRequest) {
-		return leadService.getLeads(getLeadsRequest);
+	@PostMapping("/secure/get-leads")
+	public ResponseEntity<?> getLeads(@RequestBody GetLeadsRequest getLeadsRequest, Authentication authentication) {
+		return leadService.getLeads(getLeadsRequest, authentication);
 	}
 
 	@GetMapping("/get-lead-descriptions/{leadId}")
