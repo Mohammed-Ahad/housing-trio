@@ -59,7 +59,11 @@ public class SecurityConfig {
 		UserDetails mujeeb = User.withDefaultPasswordEncoder().username("abdul.mujeeb").password("Abdul@123")
 				.roles("USER").build();
 
-		List<UserDetails> users = List.of(info, saif, haseeb, mujeeb);
+		@SuppressWarnings("deprecation")
+		UserDetails faraz = User.withDefaultPasswordEncoder().username("syed.faraz").password("Faraz@123").roles("USER")
+				.build();
+
+		List<UserDetails> users = List.of(info, saif, haseeb, mujeeb, faraz);
 		return new InMemoryUserDetailsManager(users);
 	}
 }

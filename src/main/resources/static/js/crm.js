@@ -172,7 +172,7 @@ function showLeadPopUp(element) {
 	const statusOption = ['New', 'Hot', 'Follow Up', 'Prospect', 'Site visit scheduled',
 		'Site visit done', 'Booked and Closed', 'No response', 'Dead'];
 	//User options in form
-	const users = ['info', 'saifulla.shariff', 'haseeb.shariff', 'abdul.mujeeb']
+	const users = ['info', 'saifulla.shariff', 'haseeb.shariff', 'abdul.mujeeb', 'syed.faraz']
 
 	$.confirm({
 		title: 'Add Lead?',
